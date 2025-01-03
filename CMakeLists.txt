@@ -50,6 +50,8 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   option(PJSON_ENABLE_CODE_COVERAGE "Enable code coverage for tests" OFF)
 
   if(BUILD_TESTING)
+    add_compile_definitions(UNITY_INCLUDE_PRINT_FORMATTED)
+
     FetchContent_Declare(
       unity
       GIT_REPOSITORY https://github.com/ThrowTheSwitch/Unity
@@ -63,15 +65,23 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     enable_testing()
 
     file (GLOB PJSON_TEST_SOURCES test/*.c test/*.h)
-    add_executable(pjson_test ${PJSON_TEST_SOURCES})
+    add_executable(pjson_test ${PJSON_LIB_SOURCES} ${PJSON_TEST_SOURCES})
     configure_compiler(pjson_test)
 
     target_include_directories(pjson_test PRIVATE src/ test/ shared/)
-    target_compile_definitions(pjson_test PRIVATE PJSON_CONFIG_H="pjson_config_test.h")
+    target_compile_definitions(pjson_test
+      PRIVATE _CRT_SECURE_NO_DEPRECATE
+      PRIVATE PJSON_CONFIG_H="pjson_config_test.h"
+    )
 
     target_link_libraries(pjson_test PRIVATE
       unity
-      pjson
+    )
+
+    add_custom_command(TARGET pjson_test POST_BUILD
+      COMMAND ${CMAKE_COMMAND}
+      ARGS -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/test/data" "${CMAKE_CURRENT_BINARY_DIR}/test/data"
+      COMMENT "Copying test data"
     )
 
     if(PJSON_ENABLE_CODE_COVERAGE)

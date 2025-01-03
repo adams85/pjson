@@ -26,9 +26,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "pjson_config_test.h"
-#include "pjson.h"
+#include <time.h>
 
 #include "unity_fixture.h"
 
@@ -38,8 +36,13 @@
 #endif // _MSC_VER
 
 int main(void) {
+  unsigned int rand_seed = (unsigned int)time(NULL);
+  srand(rand_seed);
+  TEST_PRINTF("Random seed: %u\n\n", rand_seed);
+
   UNITY_BEGIN();
   RUN_TEST_GROUP(basics);
+  RUN_TEST_GROUP(feed_fuzzy);
   return UNITY_END();
 }
 

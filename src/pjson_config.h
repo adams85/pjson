@@ -55,7 +55,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define pjson_free free
 #else
 #if !defined(pjson_malloc) || !defined(pjson_realloc) || !defined(pjson_free)
-#error "Incomplete memory management override. Define either all of pjson_malloc, pjson_realloc and pjson_realloc or none of them."
+#error "Incomplete memory management override. Define either all of pjson_malloc, pjson_realloc and pjson_free or none of them."
 #endif
 #endif
 

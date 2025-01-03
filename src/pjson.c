@@ -682,7 +682,9 @@ pjson_parsing_status pjson_feed(pjson_tokenizer *tokenizer, const uint8_t *data,
       if (!pjson_push_data_into_internal_buffer(tokenizer, tokenizer->token_start, data_end)) goto OutOfMemory;
       tokenizer->token_start = tokenizer->buf;
     }
-    else if (!p) goto OutOfMemory;
+    else {
+      if (!p) goto OutOfMemory;
+    }
   }
   else {
     tokenizer->token_type = PJSON_TOKEN_NONE;

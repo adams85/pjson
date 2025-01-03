@@ -8,7 +8,7 @@
 // #define PJSON_NO_LOCALE
 
 #ifndef PJSON_INTERNAL_BUFFER_FIXED_SIZE
-#define PJSON_INTERNAL_BUFFER_FIXED_SIZE (256)
+#define PJSON_INTERNAL_BUFFER_FIXED_SIZE (64)
 #endif
 
 #if !defined(pjson_malloc) && !defined(pjson_realloc) && !defined(pjson_free)
@@ -17,7 +17,7 @@
 #define pjson_free free
 #else
 #if !defined(pjson_malloc) || !defined(pjson_realloc) || !defined(pjson_free)
-#error "Incomplete memory management override. Define either all of pjson_malloc, pjson_realloc and pjson_realloc or none of them."
+#error "Incomplete memory management override. Define either all of pjson_malloc, pjson_realloc and pjson_free or none of them."
 #endif
 #endif
 

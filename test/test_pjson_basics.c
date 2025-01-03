@@ -2,7 +2,6 @@
 #include <string.h>
 
 #include "unity_fixture.h"
-#include "pjson_config_test.h"
 #include "pjson.h"
 #include "stats_parser.h"
 
