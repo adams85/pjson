@@ -23,13 +23,11 @@ macro(configure_compiler TARGET_NAME)
   endif()
 endmacro()
 
-# Project-wide configuration
-include_directories("${PROJECT_SOURCE_DIR}/src")
-
 # Library
 set(PJSON_LIB_SOURCES src/pjson.c src/pjson.h src/pjson_config.h)
 add_library(pjson STATIC ${PJSON_LIB_SOURCES})
 configure_compiler(pjson)
+target_include_directories(pjson PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
 
 # Build sample and test only when not used as a dependency
 # (see also: https://www.foonathan.net/2022/06/cmake-fetchcontent/)
@@ -68,7 +66,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     add_executable(pjson_test ${PJSON_TEST_SOURCES})
     configure_compiler(pjson_test)
 
-    target_include_directories(pjson_test PRIVATE test/ shared/)
+    target_include_directories(pjson_test PRIVATE src/ test/ shared/)
     target_compile_definitions(pjson_test PRIVATE PJSON_CONFIG_H="pjson_config_test.h")
 
     target_link_libraries(pjson_test PRIVATE
