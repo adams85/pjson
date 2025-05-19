@@ -1,19 +1,20 @@
 #ifndef __STATS_PARSER_H__
 #define __STATS_PARSER_H__
 
-#include <pjson.h>
+#include "pjson.h"
 
 #ifndef STATS_PARSER_MAX_DEPTH
 #define STATS_PARSER_MAX_DEPTH (100)
-#endif // !STATS_PARSER_MAX_DEPTH
+#endif // STATS_PARSER_MAX_DEPTH
 
 typedef struct {
-  pjson_parser_context base;
+  pjson_parser_context base; // base struct MUST be the first member!
   size_t counter;
 } stats_parser_context;
 
 typedef struct {
-  pjson_parser base;
+  pjson_parser base; // base struct MUST be the first member!
+
   // For simplicity's sake, we use a fixed-size buffer for storing the context stack.
   // In real life, when maximum depth of the parsed JSON is not known beforehand,
   // you may want to use a dynamically allocated data structure for this purpose.
@@ -35,7 +36,6 @@ static pjson_parsing_status stats_parser_push_context(stats_parser *parser) {
   if (next_index >= pjson_countof(parser->context_stack)) {
     return PJSON_STATUS_MAX_DEPTH_EXCEEDED;
   }
-
   parser->context_stack_current_index = next_index;
   return PJSON_STATUS_SUCCESS;
 }
@@ -161,6 +161,11 @@ static void stats_parser_init(stats_parser *parser, bool is_lazy) {
     (pjson_parser_context_callback)&stats_parser_on_value_at_toplevel;
 }
 
+#ifndef _MSC_VER
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
+#endif
+
 static void stats_parser_reset(stats_parser *parser, bool is_lazy) {
   memset(((uint8_t *)parser) + sizeof(parser->base), 0, sizeof(*parser) - sizeof(parser->base));
   parser->context_stack_current_index = (size_t)-1;
@@ -170,5 +175,9 @@ static void stats_parser_reset(stats_parser *parser, bool is_lazy) {
   stats_parser_peek_context(parser, false)->base.on_value =
     (pjson_parser_context_callback)&stats_parser_on_value_at_toplevel;
 }
+
+#ifndef _MSC_VER
+#pragma GCC diagnostic pop
+#endif
 
 #endif // __STATS_PARSER_H__

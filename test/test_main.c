@@ -43,6 +43,7 @@ int main(void) {
   UNITY_BEGIN();
   RUN_TEST_GROUP(basics);
   RUN_TEST_GROUP(feed_fuzzy);
+  RUN_TEST_GROUP(parse_datastruct);
   return UNITY_END();
 }
 

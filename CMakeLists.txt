@@ -50,7 +50,11 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   option(PJSON_ENABLE_CODE_COVERAGE "Enable code coverage for tests" OFF)
 
   if(BUILD_TESTING)
-    add_compile_definitions(UNITY_INCLUDE_PRINT_FORMATTED)
+    add_compile_definitions(
+      UNITY_INCLUDE_PRINT_FORMATTED
+      UNITY_INCLUDE_DOUBLE
+      UNITY_DOUBLE_PRECISION=1e-12
+    )
 
     FetchContent_Declare(
       unity
@@ -62,16 +66,28 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
     FetchContent_MakeAvailable(unity)
 
+    FetchContent_Declare(
+      vec
+      GIT_REPOSITORY https://github.com/jrepp/vec
+      GIT_TAG        0e07d5813af26805678bbab422e6112421a0df62
+    )
+
+    FetchContent_GetProperties(vec)
+    if(NOT vec_POPULATED)
+        FetchContent_Populate(vec)
+    endif()
+
     enable_testing()
 
-    file (GLOB PJSON_TEST_SOURCES test/*.c test/*.h)
+    file (GLOB PJSON_TEST_SOURCES test/*.c test/*.h ${vec_SOURCE_DIR}/src/vec.c ${vec_SOURCE_DIR}/src/vec.h)
     add_executable(pjson_test ${PJSON_LIB_SOURCES} ${PJSON_TEST_SOURCES})
     configure_compiler(pjson_test)
 
-    target_include_directories(pjson_test PRIVATE src/ test/ shared/)
+    target_include_directories(pjson_test PRIVATE src/ test/ shared/ ${vec_SOURCE_DIR}/src)
     target_compile_definitions(pjson_test
       PRIVATE _CRT_SECURE_NO_DEPRECATE
       PRIVATE PJSON_CONFIG_H="pjson_config_test.h"
+      PRIVATE VEC_CONFIG_H="vec_config.h"
     )
 
     target_link_libraries(pjson_test PRIVATE
@@ -100,6 +116,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
           "${PROJECT_SOURCE_DIR}/samples/*"
           "${PROJECT_SOURCE_DIR}/shared/*"
           "${PROJECT_SOURCE_DIR}/test/*"
+          "${vec_SOURCE_DIR}/src/*"
       )
     else()
       message(STATUS "Code coverage support is disabled.")

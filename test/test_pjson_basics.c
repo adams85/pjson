@@ -7,15 +7,15 @@
 
 TEST_GROUP(basics);
 
-TEST_SETUP(basics) { }
+TEST_SETUP(basics) {}
 
 TEST_TEAR_DOWN(basics) {}
 
-static pjson_parsing_status feed_string(pjson_tokenizer *tokenizer, char *input) {
+static pjson_parsing_status feed_string(pjson_tokenizer *tokenizer, const char *input) {
   return pjson_feed(tokenizer, (uint8_t *)input, strlen(input));
 }
 
-static pjson_parsing_status parse_string(stats_parser *parser, char* input, pjson_parsing_status *feed_status) {
+static pjson_parsing_status parse_string(stats_parser *parser, const char *input, pjson_parsing_status *feed_status) {
   pjson_tokenizer tokenizer;
   pjson_init(&tokenizer, &parser->base.base);
   pjson_parsing_status status = feed_string(&tokenizer, input);
