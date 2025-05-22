@@ -35,7 +35,7 @@ TEST(parse_datastruct, test_parse_valid_datastruct) {
   ds_parser parser;
   ds_parser_init(&parser);
 
-  const char input[] = "[\n\
+  static char input[] = "[\n\
     { \"id\": -2147483648, \"name\": \"Alice\", \"rating\": 4.2 },\n\
     { \"i\\u0064\": 0, \"name\": \"B\\uD83D\\uDE00b\", \"rating\": 38e-1 },\n\
     { \"id\": 2147483647, \"name\": \"Charlie\", \"rating\": -0.5E0 }\n\
@@ -72,7 +72,7 @@ TEST(parse_datastruct, test_parse_invalid_datastruct) {
   ds_parser parser;
   ds_parser_init(&parser);
 
-  const char input[] = "[\n\
+  static char input[] = "[\n\
     { \"id\": -2147483648, \"name\": \"Alice\", \"rating\": 4.2 },\n\
     { \"i\\u0064\": 0, \"name\": \"B\\uD83D\\uDE00b\", \"rating\": 38e-1 },\n\
     { \"id\": 2147483648, \"name\": \"Charlie\", \"rating\": -0.5E0 }\n\

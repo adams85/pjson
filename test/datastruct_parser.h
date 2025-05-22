@@ -2,6 +2,7 @@
 #define __DATASTRUCT_PARSER_H__
 
 #include <assert.h>
+#include <string.h>
 #include "pjson.h"
 #include "vec.h"
 
@@ -79,7 +80,7 @@ static pjson_parsing_status parse_string_property_value(ds_parser *parser, ds_pa
   uint8_t **value_ptr = (uint8_t **)context->data.item.current_member;
   *value_ptr = (uint8_t *)pjson_malloc(token->unescaped_length + 1);
   if (!*value_ptr) return PJSON_STATUS_OUT_OF_MEMORY;
-  pjson_parse_string(*value_ptr, token->unescaped_length, token->start, token->length);
+  pjson_parse_string(*value_ptr, token->unescaped_length, token->start, token->length, false);
   (*value_ptr)[token->unescaped_length] = 0;
   return PJSON_STATUS_SUCCESS;
 }
@@ -105,7 +106,7 @@ static const char *get_property_name(const pjson_token *token) {
 
   uint8_t *property_name = (uint8_t *)pjson_malloc(token->unescaped_length);
   if (!property_name) return NULL;
-  pjson_parse_string(property_name, token->unescaped_length, token->start, token->length);
+  pjson_parse_string(property_name, token->unescaped_length, token->start, token->length, false);
   return (const char *)property_name;
 }
 

@@ -211,7 +211,7 @@ extern "C" {
 
   /* Helpers */
 
-  bool PJSON_API(pjson_parse_string)(uint8_t *dest, size_t dest_size, const uint8_t *token_start, size_t token_length);
+  bool PJSON_API(pjson_parse_string)(uint8_t *dest, size_t dest_size, const uint8_t *token_start, size_t token_length, bool replace_lone_surrogates);
   bool PJSON_API(pjson_parse_uint32)(uint32_t *num, const uint8_t *token_start, size_t token_length);
   bool PJSON_API(pjson_parse_int32)(int32_t *num, const uint8_t *token_start, size_t token_length);
   bool PJSON_API(pjson_parse_uint64)(uint64_t *num, const uint8_t *token_start, size_t token_length);

@@ -44,7 +44,7 @@ static pjson_parsing_status on_subsequent_token(pjson_parser_base *parser, const
     token_type_name(token->type), token->start_index, token->length, buf);
 
   if (token->unescaped_length != token->length - (token->type == PJSON_TOKEN_STRING ? 2 : 0)) {
-    if (!pjson_parse_string((uint8_t *)buf, token->length, token->start, token->length)) {
+    if (!pjson_parse_string((uint8_t *)buf, token->length, token->start, token->length, true)) {
       return PJSON_STATUS_USER_ERROR;
     }
     buf[token->unescaped_length] = 0;

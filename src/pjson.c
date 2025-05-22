@@ -183,7 +183,7 @@ static const uint8_t *pjson_push_data_into_internal_buffer(pjson_tokenizer *toke
         if (buf) break;
       }
 
-      if (new_capacity > new_length) new_capacity = new_length;
+      if (new_capacity > new_length) new_capacity = new_length; // retry allocation with new_length
       else return NULL;
     }
     tokenizer->buf = buf;
@@ -470,6 +470,7 @@ pjson_parsing_status pjson_feed(pjson_tokenizer *tokenizer, const uint8_t *data,
 
         tokenizer->unescaped_length += utf8_byte_size(UTF8_INVALID_CODEPOINT_REPLACEMENT); // lone high surrogate
         tokenizer->string_state.utf16_surrogate_pair[0] = tokenizer->string_state.utf16_surrogate_pair[1] = 0;
+        tokenizer->state = STATE_IN_STRING;
         goto ExpectStringCharacter;
       }
 
@@ -481,6 +482,7 @@ pjson_parsing_status pjson_feed(pjson_tokenizer *tokenizer, const uint8_t *data,
 
         tokenizer->unescaped_length += utf8_byte_size(UTF8_INVALID_CODEPOINT_REPLACEMENT); // lone high surrogate
         tokenizer->string_state.utf16_surrogate_pair[0] = tokenizer->string_state.utf16_surrogate_pair[1] = 0;
+        tokenizer->state = STATE_IN_STRING_EXPECT_ESCAPE;
         goto ExpectStringEscapeCharacter;
       }
 
@@ -1224,7 +1226,7 @@ static int32_t utf16_parse_char(const uint8_t *src) {
   return cp;
 }
 
-bool pjson_parse_string(uint8_t *dest, size_t dest_size, const uint8_t *token_start, size_t token_length) {
+bool pjson_parse_string(uint8_t *dest, size_t dest_size, const uint8_t *token_start, size_t token_length, bool replace_lone_surrogates) {
   assert(dest);
   assert(token_start);
 
@@ -1262,17 +1264,22 @@ bool pjson_parse_string(uint8_t *dest, size_t dest_size, const uint8_t *token_st
           if (cp < 0) return false;
           token_start += 4;
 
-          if (utf16_is_high_surrogate((uint16_t)cp)
-            && token_start + 6 < token_end
-            && *(token_start + 1) == '\\' && *(token_start + 2) == 'u') {
+          if (utf16_is_high_surrogate((uint16_t)cp)) {
+            if (token_start + 6 < token_end
+              && *(token_start + 1) == '\\' && *(token_start + 2) == 'u') {
+                int32_t cp2 = utf16_parse_char(token_start + 3);
+                if (cp2 < 0) return false;
 
-            int32_t cp2 = utf16_parse_char(token_start + 3);
-            if (cp2 < 0) return false;
-
-            if (utf16_is_low_surrogate((uint16_t)cp2)) {
-              token_start += 6;
-              cp = utf16_to_code_point((uint16_t)cp, (uint16_t)cp2);
+                if (utf16_is_low_surrogate((uint16_t)cp2)) {
+                  token_start += 6;
+                  cp = utf16_to_code_point((uint16_t)cp, (uint16_t)cp2);
+                }
+                else if (!replace_lone_surrogates) return false;
             }
+            else if (!replace_lone_surrogates) return false;
+          }
+          else if (!replace_lone_surrogates && utf16_is_low_surrogate((uint16_t)cp)) {
+            return false;
           }
 
           if (!utf8_encode_code_point(cp, &dest, dest_end)) return false;

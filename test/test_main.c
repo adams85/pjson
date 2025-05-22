@@ -42,8 +42,10 @@ int main(void) {
 
   UNITY_BEGIN();
   RUN_TEST_GROUP(basics);
+  RUN_TEST_GROUP(errors);
   RUN_TEST_GROUP(feed_fuzzy);
   RUN_TEST_GROUP(parse_datastruct);
+  RUN_TEST_GROUP(value_helpers);
   return UNITY_END();
 }
 

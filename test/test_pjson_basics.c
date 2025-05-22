@@ -500,7 +500,7 @@ TEST(basics, test_parse_multiple_toplevel_values_greedy) {
   pjson_tokenizer tokenizer;
   pjson_init(&tokenizer, &parser.base.base);
 
-  static char *input = "0.12{ }";
+  static char input[] = "0.12{ }";
   pjson_parsing_status feed_status = feed_string(&tokenizer, input);
   TEST_ASSERT_EQUAL(PJSON_STATUS_SYNTAX_ERROR, feed_status);
   TEST_ASSERT_EQUAL(4, tokenizer.index);
@@ -522,7 +522,7 @@ TEST(basics, test_parse_multiple_toplevel_values_lazy) {
   pjson_tokenizer tokenizer;
   pjson_init(&tokenizer, &parser.base.base);
 
-  static char *input = "0.12{ }";
+  static char input[] = "0.12{ }";
   pjson_parsing_status feed_status = feed_string(&tokenizer, input);
   TEST_ASSERT_EQUAL(PJSON_STATUS_COMPLETED, feed_status);
   TEST_ASSERT_EQUAL(4, tokenizer.index);

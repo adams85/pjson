@@ -53,7 +53,6 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     add_compile_definitions(
       UNITY_INCLUDE_PRINT_FORMATTED
       UNITY_INCLUDE_DOUBLE
-      UNITY_DOUBLE_PRECISION=1e-12
     )
 
     FetchContent_Declare(
